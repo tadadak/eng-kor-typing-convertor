@@ -5,7 +5,8 @@
 
 | version | release | changes |
 |---|:---:|---:|
-| v1.1.0 | 2020.01.10 | first commit |
+| v1.1.0 | 2020.01.18 | first commit: maven -> gradle project로 변경 후 재시작 |
+
 
 # How To Use
 > Eng -> Kor
