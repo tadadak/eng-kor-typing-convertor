@@ -15,11 +15,11 @@
 ```java
 String word = "rtgkqslek";  
 // 복합자음 변환을 허용X (default = false)
-EngKorTypingConvertor.convertEng2Han(result1);
+EngKorTypingConvertor.convertEng2Han(word);
 // result:  ㄱㅅ합니다
 
 // 복합자음 변환을 허용O
-EngKorTypingConvertor.convertEng2Han(rsesult1, true);
+EngKorTypingConvertor.convertEng2Han(word, true);
 // result:  ㄳ합니다
 ```
 
@@ -27,7 +27,7 @@ EngKorTypingConvertor.convertEng2Han(rsesult1, true);
 - 한글입력 대응 영문자 변환 
 ```java
 String word = "영어로 바꿔봅시다!";
-EngKorTypingConvertor.convertHan2Eng(result1);
+EngKorTypingConvertor.convertHan2Eng(word);
 // result:  duddjfh qkRnjqhqtlek!
 ```
 
