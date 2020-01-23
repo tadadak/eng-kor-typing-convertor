@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Author : tadadak
+ * Author : tadadak (dev.tadadak@gmail.com)
  * Date : 2020-01-09
  * Desc : 영문->한글 / 한글->영문 타이핑 상호 변환모듈
  * <p>
@@ -39,6 +39,11 @@ public class EngKorTypingConvertor {
     /** 음절(Syllable)타입 **/
     enum HangulSyllableType {
         CHOSUNG, JUNGSUNG, JONGSUNG
+    }
+
+    /** 한글변환시 리턴문자열 타입 **/
+    enum KorConvRtnType{
+        ALPHABET, JAUM_MOUM
     }
 
     /************************************************
@@ -209,111 +214,24 @@ public class EngKorTypingConvertor {
      * @return
      */
     static private int getSyllableCode(HangulSyllableType type, int idx, String engStr, boolean isDouble){
+        int offset = 1;
+        if(isDouble) offset = 2;
         switch(type){
             // A. 중성코드 추출
             case JUNGSUNG:
-                if(!isDouble){
-                    // A.1. 한글자 중성코드
-                    if((idx+1) <= engStr.length()){
-                        return getSyllableCode(HangulSyllableType.JUNGSUNG, engStr.substring(idx, idx+1));
-                    }
-                }else{
-                    // A.2. 두글자 중성코드
-                    int result;
-                    if ((idx+2) <= engStr.length()) {
-                        result = getSyllableCode(HangulSyllableType.JUNGSUNG, engStr.substring(idx, idx+2));
-                        if (result != -1) {
-                            return result;
-                        } else {
-                            return -1;
-                        }
-                    }
+                if((idx+offset) <= engStr.length()){
+                    return getSyllableCode(HangulSyllableType.JUNGSUNG, engStr.substring(idx, idx+offset));
                 }
-             break;
+                break;
 
             // B. 종성코드 추출
             case JONGSUNG:
-                if(!isDouble){
-                    // B.1. 한글자 종성코드
-                    if ((idx+1) <= engStr.length()) {
-                        return getSyllableCode(HangulSyllableType.JONGSUNG, engStr.substring(idx, idx+1));
-                    }
-                }else{
-                    // B.2. 두글자 종성코드
-                    if ((idx+2) <= engStr.length()) {
-                        return getSyllableCode(HangulSyllableType.JONGSUNG, engStr.substring(idx, idx+2));
-                    }
+                if ((idx+offset) <= engStr.length()) {
+                    return getSyllableCode(HangulSyllableType.JONGSUNG, engStr.substring(idx, idx+offset));
                 }
                 break;
         }
         return -1;
-    }
-
-    /**
-     * 한글문자열을, 한글조합되는 영문문자열로 변환
-     * ex) 영어로 --> duddjfh
-     *
-     * @param hanStr
-     * @return
-     */
-    public static String convertHan2Eng(String hanStr){
-        StringBuffer sb     = new StringBuffer();
-        StringBuffer split  = new StringBuffer();
-
-        for (int i = 0; i < hanStr.length(); i++) {
-            // 문자표번호 = 유니코드번호 - 0xAC00
-            char chars = (char)(hanStr.charAt(i) - HANGUL_CHAR_START_CODE);
-
-            if (chars >= 0 && chars <= TOTAL_HANGUL_CHAR) {
-                // Case1. 자음+모음 조합글자인 경우
-
-                // 1.1. 초/중/종성 분리
-                int chosungIdx  = chars / (VOWEL * PHONOGRAM);
-                int jungsungIdx = chars % (VOWEL * PHONOGRAM) / PHONOGRAM;
-                int jongsungIdx = chars % (VOWEL * PHONOGRAM) % PHONOGRAM;
-
-                // 1.2. 분리결과 담기
-                split.append(SPLIT_CHOSUNG_CHAR[chosungIdx])
-                        .append(SPLIT_JUNGSUNG_CHAR[jungsungIdx]);
-
-                // 1.3. 자음분리
-                if (jongsungIdx != 0) {
-                    // 종성이 존재할경우, 분리결과 담는다
-                    split.append(SPLIT_JONGSUNG_CHAR[jongsungIdx]);
-                }
-
-                // 1.4. 영문변환결과 담기
-                sb.append(CHOSUNG_ENG[chosungIdx])
-                        .append(JUNGSONG_ENG[jungsungIdx]);
-
-                if (jongsungIdx != 0) {
-                    // 종성이 존재할경우, 영문변환결과에 담는다
-                    sb.append(JONGSUNG_ENG[jongsungIdx]);
-                }
-
-            } else {
-                // Case2. 한글 이외의 문자 or 자음만 있는 경우
-                // 2.1. 자음 분리 & 분리결과에 담기
-                split.append(((char)(chars + HANGUL_CHAR_START_CODE)));
-
-                // 2.2. 영문변환
-                if( chars >= JAUM_CODE_AREA[0] && chars <= JAUM_CODE_AREA[1]){
-                    // 2.2.1 단일자음 범위인 경우
-                    int jaum = (chars-JAUM_CODE_AREA[0]);
-                    sb.append(SINGLE_JAUM_ENG[jaum]);
-                } else if( chars >= MOUM_CODE_AREA[0] && chars <= MOUM_CODE_AREA[1]) {
-                    // 2.2.2 단일모음 범위인 경우
-                    int moum = (chars-MOUM_CODE_AREA[0]);
-                    sb.append(JUNGSONG_ENG[moum]);
-                } else {
-                    // 2.2.3 그 외 문자
-                    sb.append(((char)(chars + HANGUL_CHAR_START_CODE)));
-                }
-            }//if
-        }//for
-
-        //System.out.println("> 자음/모음 분리결과: "+ split.toString());
-        return sb.toString();
     }
 
     /**
@@ -327,7 +245,7 @@ public class EngKorTypingConvertor {
      *                true : 허용함   ㄳ ㅄ
      * @return
      */
-    public static String convertEng2Han(String engStr, boolean allowDoubleJaum) {
+    public static String convertEng2Kor(String engStr, boolean allowDoubleJaum) {
         StringBuffer sb = new StringBuffer();
         String currentChar;
         Matcher mc;
@@ -435,8 +353,105 @@ public class EngKorTypingConvertor {
         return sb.toString();
     }
 
-    public static String convertEng2Han(String eng) {
-        return convertEng2Han(eng, false);
+    public static String convertEng2Kor(String eng) {
+        return convertEng2Kor(eng, false);
+    }
+
+
+    /**
+     * 한글문자열을, 한글조합되는 영문문자열로 변환
+     * ex) 영어로 --> duddjfh
+     *
+     * @param korStr
+     * @return
+     */
+    public static String convertKor2Eng(String korStr){
+        return convertHangul(korStr, KorConvRtnType.ALPHABET);
+    }
+
+
+    /**
+     * 한글문자열을 자음,모음 문자열로 변환
+     * ex) 자음모음문자열로 --> ㅈㅏㅇㅡㅁㅁㅗㅇㅡㅁㅁㅜㄴㅈㅏㅇㅕㄹㄹㅗ
+     * @param korStr
+     * @return
+     */
+    public static String separateHangul(String korStr){
+        return convertHangul(korStr, KorConvRtnType.JAUM_MOUM);
+    }
+
+
+    /**
+     * 한글문자열 -> 영문문자열 or 자음,모음 문자열로 변환
+     * @param korStr
+     * @param korConvRtnType
+     * @return
+     */
+    private static String convertHangul(String korStr, KorConvRtnType korConvRtnType){
+        StringBuffer sb     = new StringBuffer();
+        StringBuffer split  = new StringBuffer();
+
+        for (int i = 0; i < korStr.length(); i++) {
+            // 문자표번호 = 유니코드번호 - 0xAC00
+            char chars = (char)(korStr.charAt(i) - HANGUL_CHAR_START_CODE);
+
+            if (chars >= 0 && chars <= TOTAL_HANGUL_CHAR) {
+                // Case1. 자음+모음 조합글자인 경우
+
+                // 1.1. 초/중/종성 분리
+                int chosungIdx  = chars / (VOWEL * PHONOGRAM);
+                int jungsungIdx = chars % (VOWEL * PHONOGRAM) / PHONOGRAM;
+                int jongsungIdx = chars % (VOWEL * PHONOGRAM) % PHONOGRAM;
+
+                // 1.2. 분리결과 담기
+                split.append(SPLIT_CHOSUNG_CHAR[chosungIdx])
+                        .append(SPLIT_JUNGSUNG_CHAR[jungsungIdx]);
+
+                // 1.3. 자음분리
+                if (jongsungIdx != 0) {
+                    // 종성이 존재할경우, 분리결과 담는다
+                    split.append(SPLIT_JONGSUNG_CHAR[jongsungIdx]);
+                }
+
+                // 1.4. 영문변환결과 담기
+                sb.append(CHOSUNG_ENG[chosungIdx])
+                        .append(JUNGSONG_ENG[jungsungIdx]);
+
+                if (jongsungIdx != 0) {
+                    // 종성이 존재할경우, 영문변환결과에 담는다
+                    sb.append(JONGSUNG_ENG[jongsungIdx]);
+                }
+
+            } else {
+                // Case2. 한글 이외의 문자 or 자음만 있는 경우
+                // 2.1. 자음 분리 & 분리결과에 담기
+                split.append(((char)(chars + HANGUL_CHAR_START_CODE)));
+
+                // 2.2. 영문변환
+                if( chars >= JAUM_CODE_AREA[0] && chars <= JAUM_CODE_AREA[1]){
+                    // 2.2.1 단일자음 범위인 경우
+                    int jaum = (chars-JAUM_CODE_AREA[0]);
+                    sb.append(SINGLE_JAUM_ENG[jaum]);
+                } else if( chars >= MOUM_CODE_AREA[0] && chars <= MOUM_CODE_AREA[1]) {
+                    // 2.2.2 단일모음 범위인 경우
+                    int moum = (chars-MOUM_CODE_AREA[0]);
+                    sb.append(JUNGSONG_ENG[moum]);
+                } else {
+                    // 2.2.3 그 외 문자
+                    sb.append(((char)(chars + HANGUL_CHAR_START_CODE)));
+                }
+            }//if
+        }//for
+
+        switch (korConvRtnType) {
+            case ALPHABET:
+                return sb.toString();
+            case JAUM_MOUM:
+                return split.toString();
+            default:
+                return null;
+        }
+
     }
 
 
