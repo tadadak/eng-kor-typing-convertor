@@ -4,8 +4,9 @@
 # Release Note
 
 | version | release | changes |
-|---|:---:|---:|
-| v1.1.0 | 2020.01.18 | first commit: maven -> gradle project로 변경 후 재시작 |
+|---|:---:|:---|
+| v1.0.1 | 2020.01.23 | 한글문자 -> 자음,모음 분리기능 추가. 코드 리팩토링 |
+| v1.0.0 | 2020.01.18 | first commit: maven -> gradle project로 변경 후 재시작 |
 
 
 # How To Use
@@ -15,11 +16,11 @@
 ```java
 String word = "rtgkqslek";  
 // 복합자음 변환을 허용X (default = false)
-EngKorTypingConvertor.convertEng2Han(word);
+EngKorTypingConvertor.convertEng2Kor(word);
 // result:  ㄱㅅ합니다
 
 // 복합자음 변환을 허용O
-EngKorTypingConvertor.convertEng2Han(word, true);
+EngKorTypingConvertor.convertEng2Kor(word, true);
 // result:  ㄳ합니다
 ```
 
@@ -27,8 +28,16 @@ EngKorTypingConvertor.convertEng2Han(word, true);
 - 한글입력 대응 영문자 변환 
 ```java
 String word = "영어로 바꿔봅시다!";
-EngKorTypingConvertor.convertHan2Eng(word);
+EngKorTypingConvertor.convertKor2Eng(word);
 // result:  duddjfh qkRnjqhqtlek!
+```
+
+> Kor -> 자음,모음
+- 한글입력문자열 자음,모음으로 분리
+```java
+String word = "자음모음문자열로~";
+EngKorTypingConvertor.separateHangul(word);
+// result:  ㅈㅏㅇㅡㅁㅁㅗㅇㅡㅁㅁㅜㄴㅈㅏㅇㅕㄹㄹㅗ~
 ```
 
 > Kor validataion check 
