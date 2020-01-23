@@ -215,21 +215,10 @@ public class EngKorTypingConvertor {
      */
     static private int getSyllableCode(HangulSyllableType type, int idx, String engStr, boolean isDouble){
         int offset = 1;
+        // 두개의 자음or모음 조합일 경우, 탐색offset값 조정
         if(isDouble) offset = 2;
-        switch(type){
-            // A. 중성코드 추출
-            case JUNGSUNG:
-                if((idx+offset) <= engStr.length()){
-                    return getSyllableCode(HangulSyllableType.JUNGSUNG, engStr.substring(idx, idx+offset));
-                }
-                break;
-
-            // B. 종성코드 추출
-            case JONGSUNG:
-                if ((idx+offset) <= engStr.length()) {
-                    return getSyllableCode(HangulSyllableType.JONGSUNG, engStr.substring(idx, idx+offset));
-                }
-                break;
+        if((idx+offset) <= engStr.length()){
+            return getSyllableCode(type, engStr.substring(idx, idx+offset));
         }
         return -1;
     }
