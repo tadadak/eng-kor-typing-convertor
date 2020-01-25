@@ -12,7 +12,7 @@ public class Example {
     public static void main(String[] args) {
         EngKorTypingConvertor hangulCharConvertors = new EngKorTypingConvertor();
 //        String word     = "ㅋㅋ울렐럯 얼레릴럴ㅇㄴㄹ멍맘ㄴㄹㅁㄴ¼(주) 멍충아ㅏㅠkk!@#$%^&*()★";
-        String word     = "ㄱㅅㄱㅅㄱㅅ ㅂㅅㅂㅅ 음하하하?!ㄹㅁ ㄹㅎ ㄹㄱ";
+        String word     = "ㄱㅅㄱㅅㄱㅅ ㅂㅅㅂㅅ 음하하하?!ㄹㅁ ㄹㅎ ㄹㄱ ㅘㅝ ";
         String result1;
         String result2;
         String result3;
@@ -24,11 +24,11 @@ public class Example {
         result1 = hangulCharConvertors.convertKor2Eng(word);
         System.out.println("2. convertKor2Eng : " + result1);
 
-        // 3-1. 변환: 영어 -> 한글 (복합자음 허용X)
+        // 3-1. 변환: 영어 -> 한글 (복합자음 허용O)
         result2 = hangulCharConvertors.convertEng2Kor(result1, true);
         System.out.println("3-1. convertEng2Kor : " + result2);
 
-        // 3-2. 변환: 영어 -> 한글 (복합자음 허용O)
+        // 3-2. 변환: 영어 -> 한글 (복합자음 허용X)
         result2 = hangulCharConvertors.convertEng2Kor(result1, false);
         System.out.println("3-2. convertEng2Kor : " + result2);
 
