@@ -328,10 +328,21 @@ public class EngKorTypingConvertor {
 
             }else{
                 // 2. 초성코드가 아닌 경우
-                // 2.1. 단일 중성인지 검사
+                // 2.1. 중성인지 검사(종성없이)
                 Integer chkIdx = JUNGSUNG_ENG_IDX.get(currentChar);
                 if(chkIdx != null){
-                    char chars = (char)(SPLIT_JUNGSUNG_CHAR[JUNGSUNG_ENG_IDX.get(currentChar)] - HANGUL_CHAR_START_CODE);
+                    // 2.1.1. 복합중성이 존재할경우
+                    if ((i+2) <= engStr.length()) {
+                        String chkCombChar = engStr.substring(i+1, i+2);
+                        if(JUNGSUNG_ENG_IDX.containsKey(currentChar + chkCombChar)){
+                            sb.append(SPLIT_JUNGSUNG_CHAR[JUNGSUNG_ENG_IDX.get(currentChar + chkCombChar)]);
+                            i++;
+                            continue;
+                        }
+                    }//end if
+
+                    // 2.1.2. 단일중성인 경우
+                    char chars = (char)(SPLIT_JUNGSUNG_CHAR[chkIdx] - HANGUL_CHAR_START_CODE);
                     if( chars >= MOUM_CODE_AREA[0] && chars <= MOUM_CODE_AREA[1]) {
                         sb.append(SPLIT_JUNGSUNG_CHAR[JUNGSUNG_ENG_IDX.get(currentChar)]);
                     }
